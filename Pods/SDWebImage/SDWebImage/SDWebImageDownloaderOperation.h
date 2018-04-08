@@ -67,6 +67,8 @@ FOUNDATION_EXPORT NSString * _Nonnull const SDWebImageDownloadFinishNotification
  *
  * This will be overridden by any shared credentials that exist for the username or password of the request URL, if present.
  */
+
+// URL加载系统支持三种类型的凭证：基于密码的用户凭证，基于证书的用户凭证和基于证书的服务器凭证（用于验证服务器身份时）。
 @property (nonatomic, strong, nullable) NSURLCredential *credential;
 
 /**

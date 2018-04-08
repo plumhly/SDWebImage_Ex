@@ -313,7 +313,7 @@ FOUNDATION_STATIC_INLINE NSUInteger SDCacheCostForImage(UIImage *image) {
     return image;
 }
 
-// 的缓存路径，通过md5处理url或者url+扩展名，来获取数据
+// 缓存路径，通过md5处理url或者url+扩展名，来获取数据
 - (nullable NSData *)diskImageDataBySearchingAllPathsForKey:(nullable NSString *)key {
     NSString *defaultPath = [self defaultCachePathForKey:key];//Library/Caches/default/com.hackemist.SDWebImageCache.default
     NSData *data = [NSData dataWithContentsOfFile:defaultPath options:self.config.diskCacheReadingOptions error:nil];
@@ -374,6 +374,7 @@ FOUNDATION_STATIC_INLINE NSUInteger SDCacheCostForImage(UIImage *image) {
     return [self queryCacheOperationForKey:key options:0 done:doneBlock];
 }
 
+// 从内存或者disk获取数据，然后调用doneBlock
 - (nullable NSOperation *)queryCacheOperationForKey:(nullable NSString *)key options:(SDImageCacheOptions)options done:(nullable SDCacheQueryCompletedBlock)doneBlock {
     
     //返回nil
@@ -404,14 +405,15 @@ FOUNDATION_STATIC_INLINE NSUInteger SDCacheCostForImage(UIImage *image) {
         }
         
         @autoreleasepool {
-            // key 就是url
+            // key 就是url，disk数据
             NSData *diskData = [self diskImageDataBySearchingAllPathsForKey:key];
             UIImage *diskImage = image;
             if (!diskImage && diskData) {
                 // decode image data only if in-memory cache missed
+                // decompress 或者 downscale
                 diskImage = [self diskImageForKey:key data:diskData];
                 if (diskImage && self.config.shouldCacheImagesInMemory) {
-                    NSUInteger cost = SDCacheCostForImage(diskImage);
+                    NSUInteger cost = SDCacheCostForImage(diskImage);//像素数
                     [self.memCache setObject:diskImage forKey:key cost:cost];
                 }
             }

@@ -74,6 +74,7 @@ typedef NSMutableDictionary<NSString *, id> SDCallbacksDictionary;
     return self;
 }
 
+// 返回存储 progressBlock 和 completedBlock 字典
 - (nullable id)addHandlersForProgress:(nullable SDWebImageDownloaderProgressBlock)progressBlock
                             completed:(nullable SDWebImageDownloaderCompletedBlock)completedBlock {
     SDCallbacksDictionary *callbacks = [NSMutableDictionary new];
@@ -89,6 +90,7 @@ typedef NSMutableDictionary<NSString *, id> SDCallbacksDictionary;
     __block NSMutableArray<id> *callbacks = nil;
     dispatch_sync(self.barrierQueue, ^{
         // We need to remove [NSNull null] because there might not always be a progress block for each callback
+        //Return an array containing the results of invoking -valueForKey: on each of the receiver's elements. The returned array will contain NSNull elements for each instance of -valueForKey: returning nil
         callbacks = [[self.callbackBlocks valueForKey:key] mutableCopy];
         [callbacks removeObjectIdenticalTo:[NSNull null]];
     });
@@ -352,6 +354,15 @@ didReceiveResponse:(NSURLResponse *)response
     }
 }
 
+/*
+ 1.The request is for an HTTP or HTTPS URL (or your own custom networking protocol that supports caching).
+ 2.The request was successful (with a status code in the 200–299 range).
+ 3.The provided response came from the server, rather than out of the cache.
+ 4.The session configuration’s cache policy allows caching.
+ 5.The provided NSURLRequest object's cache policy (if applicable) allows caching.
+ 6.The cache-related headers in the server’s response (if present) allow caching.
+ 7.The response size is small enough to reasonably fit within the cache. (For example, if you provide a disk cache, the response must be no larger than about 5% of the disk cache size.)
+ */
 - (void)URLSession:(NSURLSession *)session
           dataTask:(NSURLSessionDataTask *)dataTask
  willCacheResponse:(NSCachedURLResponse *)proposedResponse
@@ -441,7 +452,7 @@ didReceiveResponse:(NSURLResponse *)response
     NSURLSessionAuthChallengeDisposition disposition = NSURLSessionAuthChallengePerformDefaultHandling;
     __block NSURLCredential *credential = nil;
     
-    if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
+    if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {//服务器证书
         if (!(self.options & SDWebImageDownloaderAllowInvalidSSLCertificates)) {
             disposition = NSURLSessionAuthChallengePerformDefaultHandling;
         } else {

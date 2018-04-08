@@ -236,6 +236,7 @@
         }
 
         [sself.downloadQueue addOperation:operation];
+        // 通过依赖来实现LIFO
         if (sself.executionOrder == SDWebImageDownloaderLIFOExecutionOrder) {
             // Emulate LIFO execution order by systematically adding new operations as last operation's dependency
             [sself.lastAddedOperation addDependency:operation];

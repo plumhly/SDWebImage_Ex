@@ -91,6 +91,7 @@ static const CGFloat kDestSeemOverlap = 2.0f;   // the numbers of pixels to over
     }
 }
 
+// 判断orientation
 - (UIImage *)decodedImageWithData:(NSData *)data {
     if (!data) {
         return nil;
@@ -226,6 +227,7 @@ static const CGFloat kDestSeemOverlap = 2.0f;   // the numbers of pixels to over
 }
 
 #if SD_UIKIT || SD_WATCH
+// 根据image的属性，在画布上重新画图片
 - (nullable UIImage *)sd_decompressedImageWithImage:(nullable UIImage *)image {
     if (![[self class] shouldDecodeImage:image]) {
         return image;
@@ -431,7 +433,7 @@ static const CGFloat kDestSeemOverlap = 2.0f;   // the numbers of pixels to over
     
     // Add your image to the destination.
     CGImageDestinationAddImage(imageDestination, image.CGImage, (__bridge CFDictionaryRef)properties);
-#error 看到这里
+
     // Finalize the destination.
     if (CGImageDestinationFinalize(imageDestination) == NO) {
         // Handle failure.
